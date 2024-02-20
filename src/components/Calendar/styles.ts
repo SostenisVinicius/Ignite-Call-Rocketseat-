@@ -15,7 +15,10 @@ export const CalendarHeader = styled('div', {
 
 export const CalendarTitle = styled(Text, {
   fontWeight: '$medium',
-  textTransform: 'capitalize',
+
+  span: {
+    color: '$gray200',
+  },
 })
 
 export const CalendarActions = styled('div', {
@@ -45,21 +48,37 @@ export const CalendarActions = styled('div', {
 })
 
 export const CalendarBody = styled('table', {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(7, 1fr)',
-  gap: '$2',
-  marginTop: '$6',
+  width: '100%',
+  fontFamily: '$default',
+  borderSpacing: '0.25rem',
+  tableLayout: 'fixed',
+
+  'thead th': {
+    color: '$gray200',
+    fontWeight: '$medium',
+    fontSize: '$sm',
+  },
+
+  'tbody:before': {
+    content: '.',
+    lineHeight: '0.75rem',
+    display: 'block',
+    color: '$gray800',
+  },
+
+  'tbody td': {
+    boxSizing: 'border-box',
+  },
 })
 
 export const CalendarDay = styled('button', {
   all: 'unset',
-  width: '$10',
-  height: '$10',
+  width: '100%',
+  aspectRatio: '1 / 1',
+  background: '$gray600',
+  textAlign: 'center',
+  cursor: 'pointer',
   borderRadius: '$sm',
-  fontSize: '$sm',
-  color: '$gray200',
-  fontWeight: '$medium',
-  backgroundColor: '$gray600',
 
   '&:disabled': {
     background: 'none',
@@ -73,22 +92,5 @@ export const CalendarDay = styled('button', {
 
   '&:focus': {
     boxShadow: '0 0 0 2px $colors$gray100',
-  },
-
-  '&:first-of-type': {
-    borderTopLeftRadius: '$sm',
-  },
-
-  '&:last-of-type': {
-    borderTopRightRadius: '$sm',
-  },
-
-  variants: {
-    isCurrent: {
-      true: {
-        color: '$gray100',
-        fontWeight: '$bold',
-      },
-    },
   },
 })

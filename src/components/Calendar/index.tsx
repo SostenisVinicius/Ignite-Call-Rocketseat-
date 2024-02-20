@@ -47,7 +47,7 @@ export function Calendar() {
               <CalendarDay>01</CalendarDay>
             </td>
             <td>
-              <CalendarDay>02</CalendarDay>
+              <CalendarDay disabled>02</CalendarDay>
             </td>
             <td>
               <CalendarDay>03</CalendarDay>
