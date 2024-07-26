@@ -1,4 +1,8 @@
-import { Calendar } from '@/src/components/Calendar'
+import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { Calendar } from '../../../../../components/Calendar'
+import { api } from '../../../../../lib/axios'
 import {
   Container,
   TimePicker,
@@ -6,15 +10,12 @@ import {
   TimePickerItem,
   TimePickerList,
 } from './styles'
-import { useState } from 'react'
-import dayjs from 'dayjs'
-import { useRouter } from 'next/router'
-import { api } from '@/src/lib/axios'
 import { useQuery } from '@tanstack/react-query'
+import { date } from 'zod'
 
 interface Availability {
   possibleTimes: number[]
-  blockedTime: { date: string }[]
+  availableTimes: number[]
 }
 
 interface CalendarStepProps {
@@ -41,24 +42,15 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
   const { data: availability } = useQuery<Availability>({
     queryKey: ['availability', selectedDateWithoutTime],
     queryFn: async () => {
-      const { data } = await api.get(
-        `/users/${username}/availability?date=${selectedDateWithoutTime}`,
-      )
-
-      return data
+      const response = await api.get(`/users/${username}/availability`, {
+        params: {
+          date: selectedDateWithoutTime,
+          timezoneOffset: selectedDate ? selectedDate.getTimezoneOffset() : 0,
+        },
+      })
+      return response.data
     },
-  })
-
-  const { possibleTimes, blockedTime } = availability || {}
-
-  const availableTimes = possibleTimes?.filter((time) => {
-    const isTimeBlocked = blockedTime?.some(
-      (blockedTime) => dayjs(blockedTime.date).hour() === time,
-    )
-
-    const isTimeInPast = dayjs(selectedDate).set('hour', time).isBefore(dayjs())
-
-    return !isTimeBlocked && !isTimeInPast
+    enabled: !!selectedDate,
   })
 
   function handleSelectTime(hour: number) {
@@ -81,14 +73,14 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
           </TimePickerHeader>
 
           <TimePickerList>
-            {possibleTimes?.map((hour) => {
+            {availability?.possibleTimes.map((hour) => {
               return (
                 <TimePickerItem
                   key={hour}
                   onClick={() => handleSelectTime(hour)}
-                  disabled={!availableTimes?.includes(hour)}
+                  disabled={!availability.availableTimes.includes(hour)}
                 >
-                  {String(hour).padStart(2, '0')}:00
+                  {String(hour).padStart(2, '0')}:00h
                 </TimePickerItem>
               )
             })}
